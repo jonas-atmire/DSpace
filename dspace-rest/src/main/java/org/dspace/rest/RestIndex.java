@@ -7,21 +7,6 @@
  */
 package org.dspace.rest;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.log4j.Logger;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
@@ -29,6 +14,16 @@ import org.dspace.eperson.service.EPersonService;
 import org.dspace.rest.common.Status;
 import org.dspace.rest.common.User;
 import org.dspace.rest.exceptions.ContextException;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Root of RESTful api. It provides login and logout. Also have method for
@@ -55,7 +50,11 @@ public class RestIndex {
     public String sayHtmlHello() { 
     	// TODO Better graphics, add arguments to all methods. (limit, offset, item and so on)
         return "<html><title>DSpace REST - index</title>" +
-                "<body>"
+                "<body>"+
+                    "<h1>TESTING OATH</h1>" +
+                "<ul>" +
+                "<li>  <a href='http://localhost:8080/dspace-oauth/oauth/authorize?client_id=my-trusted-client&response_type=token&redirect_uri=http://localhost:8080/dspace-rest'>Authenticate against oauth</a></li>" +
+                "</ul>"
                 	+ "<h1>DSpace REST API</h1>" +
                 	"Server path: " + servletContext.getContextPath() +
                 	"<h2>Index</h2>" +

@@ -603,6 +603,18 @@
             </modules>
         </profile>
 
+       <profile>
+           <id>dspace-oauth</id>
+           <activation>
+               <file>
+                   <exists>dspace-oauth/pom.xml</exists>
+               </file>
+           </activation>
+           <modules>
+               <module>dspace-oauth</module>
+           </modules>
+       </profile>
+
         <!--
            Builds JSPUI WAR for DSpace
         -->
@@ -738,6 +750,7 @@
              <module>dspace-api</module>
              <module>dspace-jspui</module>
              <module>dspace-oai</module>
+             <module>dspace-oauth</module>
              <module>dspace-rdf</module>
              <module>dspace-rest</module>
              <module>dspace-services</module>
