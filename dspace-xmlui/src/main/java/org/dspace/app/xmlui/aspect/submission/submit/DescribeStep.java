@@ -7,49 +7,31 @@
  */
 package org.dspace.app.xmlui.aspect.submission.submit;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import javax.servlet.ServletException;
-
 import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.aspect.submission.AbstractSubmissionStep;
 import org.dspace.app.xmlui.aspect.submission.FlowUtils;
+import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.wing.Message;
 import org.dspace.app.xmlui.wing.WingException;
-import org.dspace.app.xmlui.wing.element.Body;
-import org.dspace.app.xmlui.wing.element.CheckBox;
-import org.dspace.app.xmlui.wing.element.Composite;
-import org.dspace.app.xmlui.wing.element.Division;
-import org.dspace.app.xmlui.wing.element.Field;
-import org.dspace.app.xmlui.wing.element.Instance;
-import org.dspace.app.xmlui.wing.element.List;
-import org.dspace.app.xmlui.wing.element.PageMeta;
-import org.dspace.app.xmlui.wing.element.Params;
-import org.dspace.app.xmlui.wing.element.Radio;
-import org.dspace.app.xmlui.wing.element.Select;
-import org.dspace.app.xmlui.wing.element.Text;
-import org.dspace.app.xmlui.wing.element.TextArea;
+import org.dspace.app.xmlui.wing.element.*;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.Collection;
-import org.dspace.content.DCDate;
-import org.dspace.content.DCPersonName;
-import org.dspace.content.DCSeriesNumber;
-import org.dspace.content.Metadatum;
+import org.dspace.content.*;
 import org.dspace.content.Item;
-import org.dspace.content.authority.MetadataAuthorityManager;
-import org.dspace.content.authority.ChoiceAuthorityManager;
 import org.dspace.content.authority.Choice;
+import org.dspace.content.authority.ChoiceAuthorityManager;
 import org.dspace.content.authority.Choices;
-
+import org.dspace.content.authority.MetadataAuthorityManager;
 import org.dspace.utils.DSpace;
 import org.xml.sax.SAXException;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * This is a step of the item submission processes. The describe step queries
@@ -247,22 +229,26 @@ public class DescribeStep extends AbstractSubmissionStep
                         }
                         else if (inputType.equals("qualdrop_value"))
                         {
-                                // Determine the real field's values. Since the qualifier is
-                                // selected we need to search through all the metadata and see
-                                // if any match for another field, if not we assume that this field
-                                // should handle it.
-                                Metadatum[] unfiltered = item.getMetadata(dcInput.getSchema(), dcInput.getElement(), Item.ANY, Item.ANY);
-                                ArrayList<Metadatum> filtered = new ArrayList<Metadatum>();
-                                for (Metadatum dcValue : unfiltered)
-                                {
-                                        String unfilteredFieldName = dcValue.element + "." + dcValue.qualifier;
-                                        if ( ! inputSet.isFieldPresent(unfilteredFieldName) )
-                                        {
-                                                filtered.add( dcValue );
-                                        }
+                            // Determine the real field's values. Since the qualifier is
+                            // selected we need to search through all the metadata and see
+                            // if any match for another field, if not we assume that this field
+                            // should handle it.
+                            Metadatum[] unfiltered = item.getMetadata(dcInput.getSchema(), dcInput.getElement(), Item.ANY, Item.ANY);
+                            ArrayList<Metadatum> filtered = new ArrayList<>();
+                            java.util.List<String> pairs = dcInput.getPairs();
+                            java.util.List<String> qualifiers = new ArrayList<>();
+                            for (int i = 0; i < pairs.size(); i += 2) {
+                                qualifiers.add((pairs.get(i + 1)).toLowerCase());
+                            }
+
+                            for (Metadatum dcValue : unfiltered) {
+                                String unfilteredFieldName = dcValue.element + "." + dcValue.qualifier;
+                                if (!inputSet.isFieldPresent(unfilteredFieldName) && qualifiers.contains(dcValue.qualifier.toLowerCase())){
+                                    filtered.add(dcValue);
                                 }
-                                
-                                renderQualdropField(form, fieldName, dcInput, filtered.toArray(new Metadatum[filtered.size()]), readonly);
+                            }
+
+                            renderQualdropField(form, fieldName, dcInput, filtered.toArray(new Metadatum[filtered.size()]), readonly);
                         }
                         else if (inputType.equals("textarea"))
                         {
