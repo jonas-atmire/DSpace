@@ -7,24 +7,32 @@
  */
 package org.dspace.app.rest.builder;
 
-import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.MetadataSchema;
 import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.core.Context;
-import org.dspace.discovery.SearchServiceException;
-
-import java.sql.SQLException;
 
 /**
  * Builder to construct Collection objects
+ *
+ * @author Atmire NV (info at atmire dot com)
  */
 public class CollectionBuilder extends AbstractBuilder<Collection> {
 
     private Collection collection;
 
-    public CollectionBuilder createCollection(final Context context, final Community parent) {
+    protected CollectionBuilder(Context context) {
+        super(context);
+
+    }
+
+    public static CollectionBuilder createCollection(final Context context, final Community parent) {
+        CollectionBuilder builder = new CollectionBuilder(context);
+        return builder.create(context, parent);
+    }
+
+    private CollectionBuilder create(final Context context, final Community parent) {
         this.context = context;
         try {
             this.collection = collectionService.create(context, parent);
@@ -50,6 +58,10 @@ public class CollectionBuilder extends AbstractBuilder<Collection> {
             return handleException(e);
         }
         return collection;
+    }
+
+    protected void cleanup() throws Exception {
+        delete(collection);
     }
 
     @Override

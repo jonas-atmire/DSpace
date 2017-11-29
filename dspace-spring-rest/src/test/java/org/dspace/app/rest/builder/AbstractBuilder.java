@@ -10,6 +10,8 @@ package org.dspace.app.rest.builder;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -43,6 +45,8 @@ import org.joda.time.format.PeriodFormat;
 
 /**
  * Abstract builder to construct DSpace Objects
+ *
+ * @author Atmire NV (info at atmire dot com)
  */
 public abstract class AbstractBuilder<T extends DSpaceObject> {
 
@@ -61,8 +65,14 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
 
     protected Context context;
 
+    private static List<AbstractBuilder> builders = new LinkedList<>();
     /** log4j category */
     private static final Logger log = Logger.getLogger(AbstractBuilder.class);
+
+    protected AbstractBuilder(Context context){
+        this.context = context;
+        builders.add(this);
+    }
 
     public static void init() {
         communityService = ContentServiceFactory.getInstance().getCommunityService();
@@ -93,6 +103,17 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
         resourcePolicyService = null;
         indexingService = null;
     }
+
+    public static void cleanupObjects() throws Exception {
+        for (AbstractBuilder builder : builders) {
+
+            builder.cleanup();
+
+        }
+    }
+
+    protected abstract void cleanup() throws Exception;
+
 
     protected <B> B handleException(final Exception e) {
         log.error(e.getMessage(), e);
@@ -150,12 +171,22 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
 
     public abstract T build();
 
-    public void delete(T dso) throws SQLException, IOException, AuthorizeException {
-        Context c = new Context();
-        c.turnOffAuthorisationSystem();
-        T attachedDso = c.reloadEntity(dso);
-        if(attachedDso != null) {
-            getDsoService().delete(c, attachedDso);
+    public void delete(T dso) throws Exception {
+        Context c = null;
+        try {
+            c = new Context();
+            c.turnOffAuthorisationSystem();
+            T attachedDso = c.reloadEntity(dso);
+            if (attachedDso != null) {
+                getDsoService().delete(c, attachedDso);
+            }
+
+        } finally {
+            if(c != null) {
+                c.complete();
+            }
         }
+
+        indexingService.commit();
     }
 }
