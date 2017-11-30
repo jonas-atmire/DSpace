@@ -11,20 +11,35 @@ import org.dspace.content.Community;
 import org.dspace.content.MetadataSchema;
 import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.core.Context;
-import org.dspace.discovery.SearchServiceException;
 
 /**
  * Builder to construct Community objects
+ *
+ * @author Atmire NV (info at atmire dot com)
  */
 public class CommunityBuilder extends AbstractBuilder<Community> {
 
     private Community community;
 
-    public CommunityBuilder createCommunity(final Context context) {
+    protected CommunityBuilder(Context context) {
+        super(context);
+    }
+
+    public static CommunityBuilder createCommunity(final Context context) {
+        CommunityBuilder builder = new CommunityBuilder(context);
+        return builder.create(context);
+    }
+
+    private CommunityBuilder create(final Context context) {
         return createSubCommunity(context, null);
     }
 
-    public CommunityBuilder createSubCommunity(final Context context, final Community parent) {
+    public static CommunityBuilder createSubCommunity(final Context context, final Community parent) {
+        CommunityBuilder builder = new CommunityBuilder(context);
+        return builder.createSub(context, parent);
+    }
+
+    private CommunityBuilder createSub(final Context context, final Community parent) {
         this.context = context;
         try {
             community = communityService.create(parent, context);
@@ -52,6 +67,10 @@ public class CommunityBuilder extends AbstractBuilder<Community> {
             return null;
         }
         return community;
+    }
+
+    protected void cleanup() throws Exception {
+        delete(community);
     }
 
     @Override
