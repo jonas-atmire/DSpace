@@ -22,6 +22,7 @@ import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.BitstreamFormatService;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.BundleService;
 import org.dspace.content.service.CollectionService;
@@ -62,6 +63,7 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
     static AuthorizeService authorizeService;
     static ResourcePolicyService resourcePolicyService;
     static IndexingService indexingService;
+    static BitstreamFormatService bitstreamFormatService;
 
     protected Context context;
 
@@ -87,6 +89,7 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
         authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
         resourcePolicyService = AuthorizeServiceFactory.getInstance().getResourcePolicyService();
         indexingService = DSpaceServicesFactory.getInstance().getServiceManager().getServiceByName(IndexingService.class.getName(),IndexingService.class);
+        bitstreamFormatService = ContentServiceFactory.getInstance().getBitstreamFormatService();
     }
 
     public static void destroy() {
@@ -102,6 +105,7 @@ public abstract class AbstractBuilder<T extends DSpaceObject> {
         authorizeService = null;
         resourcePolicyService = null;
         indexingService = null;
+        bitstreamFormatService = null;
     }
 
     public static void cleanupObjects() throws Exception {
