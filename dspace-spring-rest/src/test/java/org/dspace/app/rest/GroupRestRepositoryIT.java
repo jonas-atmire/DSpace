@@ -11,9 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-/**
- * Created by jonas - jonas@atmire.com on 28/11/17.
- */
+
 public class GroupRestRepositoryIT extends AbstractControllerIntegrationTest {
 
     @Test
