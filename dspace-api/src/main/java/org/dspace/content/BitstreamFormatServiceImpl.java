@@ -212,17 +212,17 @@ public class BitstreamFormatServiceImpl implements BitstreamFormatService {
                     "Only administrators can delete bitstream formats");
         }
 
-//        // Find "unknown" type
-//        BitstreamFormat unknown = findUnknown(context);
-//
-//        if (unknown.getID() == bitstreamFormat.getID())
-//        {
-//            throw new IllegalArgumentException("The Unknown bitstream format may not be deleted.");
-//        }
-//
-//        // Set bitstreams with this format to "unknown"
-//        int numberChanged = bitstreamFormatDAO.updateRemovedBitstreamFormat(context, bitstreamFormat, unknown);
-        int numberChanged = 0;
+        // Find "unknown" type
+        BitstreamFormat unknown = findUnknown(context);
+
+        if (unknown.getID() == bitstreamFormat.getID())
+        {
+            throw new IllegalArgumentException("The Unknown bitstream format may not be deleted.");
+        }
+
+        // Set bitstreams with this format to "unknown"
+        int numberChanged = bitstreamFormatDAO.updateRemovedBitstreamFormat(context, bitstreamFormat, unknown);
+
         // Delete this format from database
         bitstreamFormatDAO.delete(context, bitstreamFormat);
 
